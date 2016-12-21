@@ -1,1 +1,1 @@
-# assignment3
+# This is the final assignment for BIL103E class in ITU (Istanbul Technical University) which is kind of a "Programming 101" class. We first learn HTML & CSS then learn to create websites using Python, specifically Bottle module.
