@@ -21,6 +21,12 @@ musics = [
             'genre': 'Hard Rock'}
 ]
 
+allowedUsers = [
+            {'username': "VahitOglu", 'password': "polimer"},
+            {'username': "CansınBaba",'password': "csgo123"},
+            {'username': "OmerZade",  'password': "htmlcss"}
+]
+
 def htmlify(title, content, style):
     page = """<!DOCTYPE html>
               <html>
@@ -38,9 +44,8 @@ def CSS():
     css = """<style>
 
         table.music td,th{
-            border: solid 2px black;
-            padding: 15px;
-            border-style: groove;}
+            border: groove 2px black;
+            padding: 15px;}
             
         table.music tr{
             border-style: groove;}
@@ -61,6 +66,15 @@ def CSS():
             border: solid 2px black;
             padding: 15px;
             align = "center";}
+
+        a.button {
+            border: solid 2px black;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            background-color: #22AABB;
+            color: #555511;
+            padding: 0 5px 0 5px;}
             </style>"""
 
     return css
@@ -85,8 +99,8 @@ def a3_index():
     indexCont += "</table>\n"
     indexCont += """<table class = "button">
         <tr>
-        <td><a href = "/add_page/"><input type="submit" value = "Add a music!"></a></td>
-        <td><a href = "/assignment3/"><input type="submit" value = "List the musics"></a></td>
+        <td><a href = "/add_page/" class = "button">Add a song!</a></td>
+        <td><a href = "/assignment3/" class = "button">List the songs</a></td>
         </tr>
         </table>\n"""
 
@@ -100,16 +114,41 @@ def add_page():
         <tr><td>Album:</td><td><input type = "text" name = "album" value = ""></td></tr>
         <tr><td>Band:</td><td><input type = "text" name = "band" value = ""></td></tr>
         <tr><td>Genre:</td><td><input type = "text" name = "genre" value = ""></td></tr>
+        <tr>
+        <td>Username: <input type = "text" name = "username" value = ""></td>
+        <td>Password: <input type = "password" name = "password" value = ""></td>
+        </tr>
         <tr><td colspan ="2"><input type = "submit" value = "Add"></td></tr>
         <table>
         </form>
         """
-    return htmlify("Add a music!", addPageContent, CSS())
+    return htmlify("Add a song!", addPageContent, CSS())
 
 route ('/add_page/', 'GET', add_page)
 
 def add_submit():
     musicData = request.POST
+
+    global allowedUsers
+
+    username = str(musicData['username'])
+    password = str(musicData['password'])
+
+    validUser = False
+
+    for user in allowedUsers:
+        if (user['username'] == username and user['password'] == password):
+            validUser = True
+
+    if not validUser:
+        userError = "<h1>Your user information is wrong! Please try again.</h1>\n"
+        userError += """<table>
+            <tr>
+            <td><a href = "/add_page/" class = "button">Try Again</a></td>
+            <td><a href = "/assignment3/" class = "button">Return to the list</a></td>
+            </tr>
+            </table>"""
+        return htmlify("There was an error :(", userError, CSS())
 
     name = str(musicData['name'])
     year = int(musicData['year'])
@@ -121,17 +160,18 @@ def add_submit():
     musics = musics + [{'name': name, 'year': year, 'album': album, 'band': band, 'genre': genre}]
 
     addSubmitContent = """
-        <p>The music below has been added to the list</p>
+        <p>The song below has been added to the list</p>
         <table class = "music">
         <tr><th>Name:</th><td>""" + name + """</td></tr>
         <tr><th>Year:</th><td>""" + str(year) + """</td></tr>
         <tr><th>Album:</th><td>""" + album + """</td></tr>
         <tr><th>Band:</th><td>""" + band + """</td></tr>
         <tr><th>Genre</th><td>""" + genre + """</td></tr>
-        <tr><td colspan = "2"><a href = "/assignment3/"><input type = "submit" value = "Return to the list"></a></td></tr>
+        <tr><td colspan = "2"><a href = "/assignment3/" class = "button">Return to the list</a></td></tr>
         </table>
         """
-    return htmlify("Music successfully added!", addSubmitContent, CSS())
+
+    return htmlify("Song successfully added!", addSubmitContent, CSS())
 
 route ('/add_submit/', 'POST', add_submit)
 
