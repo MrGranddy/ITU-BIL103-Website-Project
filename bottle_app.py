@@ -41,8 +41,8 @@ def htmlify(title, content, style):
     page = """<!DOCTYPE html>
               <html>
                   <head>
-                      <title>""" + title + """</title>""" + style + """
                       <meta charset="utf-8" />
+                      <title>""" + title + """</title>""" + style + """
                   </head>
                   <body>
                       """ + content + """
@@ -147,7 +147,7 @@ def add_page():
         <td>Password: <input type = "password" name = "password" value = ""></td>
         </tr>
         <tr><td><input type = "submit" value = "Add"></td><td><a href = "/assignment3/" class = "button">Return to the list</a></td></tr>
-        <table>
+        </table>
         </form>
         """
     return htmlify("Add a song!", addPageContent, CSS())
@@ -242,7 +242,7 @@ def rating_list():
     global musics
 
     ratingListContent = '<table class = "music">\n'
-    ratingListContent += "<th>Name</th><th>Bar</th><th>Rating</th>"
+    ratingListContent += "<tr><th>Name</th><th>Bar</th><th>Rating</th></tr>"
     for song in musics:
         ratingListContent += "<tr>\n"
         ratingListContent += '<td>' + song['name'] + '</td>\n'
@@ -255,7 +255,9 @@ def rating_list():
         ratingListContent += '</td>\n'
         ratingListContent += '<td>' + str("{0:.2f}".format(round(song['rating'],2))) + ' / <b>5</b></td>\n'
         ratingListContent += "</tr>\n"
-    ratingListContent += '<td colspan = "2"><a href = "/assignment3/" class = "button">Return to the list</a></td>'
+    ratingListContent += '<tr>\n'
+    ratingListContent += '<td colspan = "3"><a href = "/assignment3/" class = "button">Return to the list</a></td>\n'
+    ratingListContent += '</tr>\n'
     ratingListContent += "</table>"
     return htmlify("Ratings", ratingListContent, CSS())
 
