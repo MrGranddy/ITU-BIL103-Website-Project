@@ -7,18 +7,28 @@
 
 from bottle import route, run, default_app, debug, request
 
+def ceil(num):
+    if (num - int(num) >= 0.5):
+        return int(num) + 1
+    else:
+        return int(num)
+
 musics = [
           { 'name': 'Smells Like Teen Spirit',
             'year': 1991,
             'album': 'Nevermind',
             'band': 'Nirvana',
-            'genre': 'Grunge'},
+            'genre': 'Grunge',
+            'rating': 5.0,
+            'votes': 1},
 
           { 'name': 'Welcome to the Jungle',
             'year': 1987,
             'album': 'Appetite for Destruction',
             'band': "Guns N' Roses",
-            'genre': 'Hard Rock'}
+            'genre': 'Hard Rock',
+            'rating': 5.0,
+            'votes': 1}
 ]
 
 allowedUsers = [
@@ -75,18 +85,28 @@ def CSS():
             background-color: #22AABB;
             color: #555511;
             padding: 0 5px 0 5px;}
+            
+        th.rate{
+            color: red;
+        }
+        
+        td.rater{
+            font-size: 10px;
+            font-weight: bold;
+        }
             </style>"""
 
     return css
 
 def a3_index():
-    indexCont = ""
+    indexCont = '<form method = "post" action = "/rate_submit/">\n'
     indexCont += '<table class = "music">\n'
 
     indexCont += "<tr>\n"
-    indexCont += "<th>Name</th><th>Year</th><th>Album</th><th>Band</th><th>Genre</th>\n"
+    indexCont += '<th>Name</th><th>Year</th><th>Album</th><th>Band</th><th>Genre</th><th class="rate">Very Bad</th><th class="rate">Bad</th><th class="rate">Meh</th><th class="rate">Good</th><th class="rate">Very Good!</th>\n'
     indexCont += "</tr>\n"
 
+    i = 0
     for music in musics:
         indexCont += "<tr>\n"
         indexCont += "<td>" + music['name'] + "</td>\n"
@@ -94,15 +114,23 @@ def a3_index():
         indexCont += "<td>" + music['album'] + "</td>\n"
         indexCont += "<td>" + music['band'] + "</td>\n"
         indexCont += "<td>" + music['genre'] + "</td>\n"
+        indexCont += '<td> <input type="radio" name="rate" value="' + str(i) + '-1"> </td>\n'
+        indexCont += '<td> <input type="radio" name="rate" value="' + str(i) + '-2"> </td>\n'
+        indexCont += '<td> <input type="radio" name="rate" value="' + str(i) + '-3"> </td>\n'
+        indexCont += '<td> <input type="radio" name="rate" value="' + str(i) + '-4"> </td>\n'
+        indexCont += '<td> <input type="radio" name="rate" value="' + str(i) + '-5"> </td>\n'
         indexCont += "</tr>\n"
+        i += 1
 
     indexCont += "</table>\n"
     indexCont += """<table class = "button">
         <tr>
         <td><a href = "/add_page/" class = "button">Add a song!</a></td>
-        <td><a href = "/assignment3/" class = "button">List the songs</a></td>
+        <td><a href = "/rating_list/" class = "button">See the ratings</a></td>
+        <td><input type="submit" value="Rate"></td>
         </tr>
-        </table>\n"""
+        </table>
+        </form>\n"""
 
     return htmlify("My lovely website", indexCont, CSS())
 
@@ -118,7 +146,7 @@ def add_page():
         <td>Username: <input type = "text" name = "username" value = ""></td>
         <td>Password: <input type = "password" name = "password" value = ""></td>
         </tr>
-        <tr><td colspan ="2"><input type = "submit" value = "Add"></td></tr>
+        <tr><td><input type = "submit" value = "Add"></td><td><a href = "/assignment3/" class = "button">Return to the list</a></td></tr>
         <table>
         </form>
         """
@@ -157,10 +185,10 @@ def add_submit():
     genre = str(musicData['genre'])
 
     global musics
-    musics = musics + [{'name': name, 'year': year, 'album': album, 'band': band, 'genre': genre}]
+    musics = musics + [{'name': name, 'year': year, 'album': album, 'band': band, 'genre': genre, 'rating': -1, 'votes': 0}]
 
     addSubmitContent = """
-        <p>The song below has been added to the list</p>
+        <h2>The song below has been added to the list</h2>
         <table class = "music">
         <tr><th>Name:</th><td>""" + name + """</td></tr>
         <tr><th>Year:</th><td>""" + str(year) + """</td></tr>
@@ -174,6 +202,64 @@ def add_submit():
     return htmlify("Song successfully added!", addSubmitContent, CSS())
 
 route ('/add_submit/', 'POST', add_submit)
+
+def rate_submit():
+
+    global musics
+
+    ratingData = request.POST
+    rawRating = str(ratingData['rate']).split("-")
+    songNum = int(rawRating[0])
+    rating = int(rawRating[1])
+    votes = musics[songNum]['votes']
+    musics[songNum]['rating'] = (musics[songNum]['rating'] * votes + rating) / (votes + 1)
+    musics[songNum]['votes'] += 1
+
+
+    name = str(musics[songNum]['name'])
+    year = int(musics[songNum]['year'])
+    album = str(musics[songNum]['album'])
+    band = str(musics[songNum]['band'])
+    genre = str(musics[songNum]['genre'])
+
+    rateSubmitContent = """
+        <h2>You have rated the song below</h2>
+        <table class = "music">
+            <tr><th>Name:</th><td>""" + name + """</td></tr>
+            <tr><th>Year:</th><td>""" + str(year) + """</td></tr>
+            <tr><th>Album:</th><td>""" + album + """</td></tr>
+            <tr><th>Band:</th><td>""" + band + """</td></tr>
+            <tr><th>Genre</th><td>""" + genre + """</td></tr>
+            <tr><td colspan = "2"><a href = "/assignment3/" class = "button">Return to the list</a></td></tr>
+        </table>"""
+
+    return htmlify("You rated a song", rateSubmitContent, CSS())
+
+route ('/rate_submit/', 'POST', rate_submit)
+
+def rating_list():
+
+    global musics
+
+    ratingListContent = '<table class = "music">\n'
+    ratingListContent += "<th>Name</th><th>Bar</th><th>Rating</th>"
+    for song in musics:
+        ratingListContent += "<tr>\n"
+        ratingListContent += '<td>' + song['name'] + '</td>\n'
+        ratingListContent += '<td class = "rater">'
+        for i in range(100):
+            if i < ceil((song['rating'] / 5) * 100):
+                ratingListContent += "&#x25A0;"
+            else:
+                ratingListContent += "&#x25A1;"
+        ratingListContent += '</td>\n'
+        ratingListContent += '<td>' + str("{0:.2f}".format(round(song['rating'],2))) + ' / <b>5</b></td>\n'
+        ratingListContent += "</tr>\n"
+    ratingListContent += '<td colspan = "2"><a href = "/assignment3/" class = "button">Return to the list</a></td>'
+    ratingListContent += "</table>"
+    return htmlify("Ratings", ratingListContent, CSS())
+
+route ('/rating_list/', 'GET', rating_list)
 
 def website_index():
     return htmlify('My lovely homepage',
