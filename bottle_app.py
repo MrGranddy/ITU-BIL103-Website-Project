@@ -13,8 +13,7 @@ def ceil(num):
     else:
         return int(num)
 
-musics = [
-          { 'name': 'Smells Like Teen Spirit',
+musics = [{ 'name': 'Smells Like Teen Spirit',
             'year': 1991,
             'album': 'Nevermind',
             'band': 'Nirvana',
@@ -29,72 +28,72 @@ musics = [
             'genre': 'Hard Rock',
             'rating': 5.0,
             'votes': 1}
-]
+          ]
 
 allowedUsers = [
-            {'username': "VahitOglu", 'password': "polimer"},
-            {'username': "CansınBaba",'password': "csgo123"},
-            {'username': "OmerZade",  'password': "htmlcss"}
-]
+                {'username': "VahitOglu", 'password': "polimer"},
+                {'username': "CansınBaba",'password': "csgo123"},
+                {'username': "OmerZade",  'password': "htmlcss"}
+                ]
 
 def htmlify(title, content, style):
     page = """<!DOCTYPE html>
-              <html>
-                  <head>
-                      <meta charset="utf-8" />
-                      <title>""" + title + """</title>""" + style + """
-                  </head>
-                  <body>
-                      """ + content + """
-                  </body>
-              </html>"""
+        <html>
+        <head>
+        <meta charset="utf-8" />
+        <title>""" + title + """</title>""" + style + """
+            </head>
+            <body>
+            """ + content + """
+                </body>
+                </html>"""
     return page
 
 def CSS():
     css = """<style>
 
         table.music td,th{
-            border: groove 2px black;
-            padding: 15px;}
-            
+        border: groove 2px black;
+        padding: 15px;}
+
         table.music tr{
-            border-style: groove;}
+        border-style: groove;}
 
         table.music{
-            border-collapse: collapse;
-            border-style: groove;}
-            
+        border-collapse: collapse;
+        border-style: groove;}
+
         table.add td{
-            padding: 0 15px 0 0;
-            align = "center";}
-            
+        padding: 0 15px 0 0;
+        align = "center";}
+
         table.music{
-            border-collapse: collapse;
+        border-collapse: collapse;
         }
 
         table.music td, th{
-            border: solid 2px black;
-            padding: 15px;
-            align = "center";}
+        border: solid 2px black;
+        padding: 15px;
+        align = "center";}
 
         a.button {
-            border: solid 2px black;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            background-color: #22AABB;
-            color: #555511;
-            padding: 0 5px 0 5px;}
-            
+        border: solid 2px black;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: bold;
+        background-color: #22AABB;
+        color: #555511;
+        padding: 0 5px 0 5px;}
+
         th.rate{
-            color: red;
+        color: red;
         }
-        
+
         td.rater{
-            font-size: 10px;
-            font-weight: bold;
+        font-size: 10px;
+        font-weight: bold;
         }
-            </style>"""
+        </style>"""
 
     return css
 
@@ -127,6 +126,8 @@ def a3_index():
         <tr>
         <td><a href = "/add_page/" class = "button">Add a song!</a></td>
         <td><a href = "/rating_list/" class = "button">See the ratings</a></td>
+        <td>Username: <input type = "text" name = "username" value = ""></td>
+        <td>Password: <input type = "password" name = "password" value = ""></td>
         <td><input type="submit" value="Rate"></td>
         </tr>
         </table>
@@ -171,11 +172,11 @@ def add_submit():
     if not validUser:
         userError = "<h1>Your user information is wrong! Please try again.</h1>\n"
         userError += """<table>
-            <tr>
-            <td><a href = "/add_page/" class = "button">Try Again</a></td>
-            <td><a href = "/assignment3/" class = "button">Return to the list</a></td>
-            </tr>
-            </table>"""
+                <tr>
+                <td><a href = "/add_page/" class = "button">Try Again</a></td>
+                <td><a href = "/assignment3/" class = "button">Return to the list</a></td>
+                </tr>
+                </table>"""
         return htmlify("There was an error :(", userError, CSS())
 
     name = str(musicData['name'])
@@ -196,9 +197,7 @@ def add_submit():
         <tr><th>Band:</th><td>""" + band + """</td></tr>
         <tr><th>Genre</th><td>""" + genre + """</td></tr>
         <tr><td colspan = "2"><a href = "/assignment3/" class = "button">Return to the list</a></td></tr>
-        </table>
-        """
-
+        </table>"""
     return htmlify("Song successfully added!", addSubmitContent, CSS())
 
 route ('/add_submit/', 'POST', add_submit)
@@ -206,8 +205,24 @@ route ('/add_submit/', 'POST', add_submit)
 def rate_submit():
 
     global musics
+    global allowedUsers
 
     ratingData = request.POST
+
+    isValid = False
+    for user in allowedUsers:
+        if ratingData['username'] == user['username'] and ratingData['password'] == user['password']:
+            isValid = True
+
+    if not isValid:
+        userError = "<h1>Your user information is wrong! Please try again.</h1>\n"
+        userError += """<table>
+            <tr>
+            <td><a href = "/assignment3/" class = "button">Return to the list</a></td>
+            </tr>
+            </table>"""
+        return htmlify("There was an error :(", userError, CSS())
+
     rawRating = str(ratingData['rate']).split("-")
     songNum = int(rawRating[0])
     rating = int(rawRating[1])
@@ -225,14 +240,13 @@ def rate_submit():
     rateSubmitContent = """
         <h2>You have rated the song below</h2>
         <table class = "music">
-            <tr><th>Name:</th><td>""" + name + """</td></tr>
-            <tr><th>Year:</th><td>""" + str(year) + """</td></tr>
-            <tr><th>Album:</th><td>""" + album + """</td></tr>
-            <tr><th>Band:</th><td>""" + band + """</td></tr>
-            <tr><th>Genre</th><td>""" + genre + """</td></tr>
-            <tr><td colspan = "2"><a href = "/assignment3/" class = "button">Return to the list</a></td></tr>
+        <tr><th>Name:</th><td>""" + name + """</td></tr>
+        <tr><th>Year:</th><td>""" + str(year) + """</td></tr>
+        <tr><th>Album:</th><td>""" + album + """</td></tr>
+        <tr><th>Band:</th><td>""" + band + """</td></tr>
+        <tr><th>Genre</th><td>""" + genre + """</td></tr>
+        <tr><td colspan = "2"><a href = "/assignment3/" class = "button">Return to the list</a></td></tr>
         </table>"""
-
     return htmlify("You rated a song", rateSubmitContent, CSS())
 
 route ('/rate_submit/', 'POST', rate_submit)
@@ -266,10 +280,10 @@ route ('/rating_list/', 'GET', rating_list)
 def website_index():
     return htmlify('My lovely homepage',
                    """
-                   <!-- p><a href="/assignment1/">Click for my assignment 1.</a></p -->
-                   <!-- p><a href="/assignment2/">Click for my assignment 2.</a></p -->
-                   <p><a href="/assignment3/">Click for my assignment 3.</a></p>
-                   """, '')
+                       <!-- p><a href="/assignment1/">Click for my assignment 1.</a></p -->
+                       <!-- p><a href="/assignment2/">Click for my assignment 2.</a></p -->
+                       <p><a href="/assignment3/">Click for my assignment 3.</a></p>
+                       """, '')
 
 route('/assignment3/', 'GET', a3_index)
 route('/', 'GET', website_index)
@@ -286,5 +300,5 @@ debug(True)
 application = default_app()
 # The below code is necessary for running this bottle app standalone on your computer.
 if __name__ == "__main__":
-  run()
+    run()
 
