@@ -102,7 +102,8 @@ def CSS(): # This is where all styles will be, for clean coding please prevent
         }
         </style>"""
 
-    return css # You know CSS element.{something} means affect the elements of that class
+    return css
+               # You know CSS element.{something} means affect the elements of that class
                # If there is something like {element}.{class} {element2} then this means
                # affect the element2's under element.class
 
@@ -176,7 +177,8 @@ def add_page():
 route ('/add_page/', 'GET', add_page)
 
 def add_submit(): # This is the song adding page
-    musicData = request.POST # The information from the add_page comes as a POST
+    musicData = request.POST
+    # The information from the add_page comes as a POST
 
     global allowedUsers # As I want to use this list I say I'm using the global list
 
@@ -189,7 +191,8 @@ def add_submit(): # This is the song adding page
 
     for user in allowedUsers:
         if (user['username'] == username and user['password'] == password):
-            validUser = True # If any of that 3 users are the input to
+            validUser = True
+                             # If any of that 3 users are the input to
                              # username and password boxes then we make validUser True
 
     if not validUser: # If the user is not valid, give an error page
