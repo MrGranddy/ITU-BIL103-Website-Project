@@ -6,14 +6,16 @@
 #####################################################################
 
 from bottle import route, run, default_app, debug, request
+from datetime import date
 
+#A fake word coming from round
 def Rondo(num): # This is a rounding function I made, it round 6.6 ro 7 and 5.2 to 5
     if (num - int(num) >= 0.5):
         return int(num) + 1
     else:
         return int(num)
-
-musics = [{ 'name': 'Smells Like Teen Spirit',
+#Songs
+songs = [{ 'name': 'Smells Like Teen Spirit',
             'year': 1991,
             'album': 'Nevermind',
             'band': 'Nirvana',
@@ -31,6 +33,7 @@ musics = [{ 'name': 'Smells Like Teen Spirit',
           ] # This is the list for holding the musics
             # User can add to this list in runtime
 
+#allowed users
 allowedUsers = [
                 {'username': "VahitOglu", 'password': "polimer"},
                 {'username': "CansınBaba",'password': "csgo123"},
@@ -45,15 +48,14 @@ def htmlify(title, content, style):
         <head>
         <meta charset="utf-8" />
         <title>""" + title + """</title>""" + style + """
-            </head>
-            <body>
-            """ + content + """
-                </body>
-                </html>"""
+        </head>
+        <body>
+        """ + content + """
+        </body>
+        </html>"""
     return page
 # Damien's htmlify function, I added the 'style' parameter, for CSS use the below
 # function that I made for easy CSS editing.
-
 
 def CSS(): # This is where all styles will be, for clean coding please prevent
            # using inline styling as much as you can
@@ -100,12 +102,44 @@ def CSS(): # This is where all styles will be, for clean coding please prevent
         font-size: 10px;
         font-weight: bold;
         }
+        
+        .fleft{
+        float: left;
+        }
         </style>"""
 
     return css
                # You know CSS element.{something} means affect the elements of that class
                # If there is something like {element}.{class} {element2} then this means
                # affect the element2's under element.class
+
+def generalError():
+    content = '<h2 class = "error">There was an error with your submission, please try again.</h2>\n'
+    content += '<a href = "/assignment3/" class = "button">Return to the list</a>'
+    return htmlify("Error!", content, CSS())
+
+def ValidateUser(username, password):
+
+    global allowedUsers # As I want to use this list I say I'm using the global list
+
+    validUser = False # Starts as false
+
+    for user in allowedUsers:
+        if (user['username'] == username and user['password'] == password):
+            validUser = True
+    # If any of that 3 users are the input to
+    # username and password boxes then we make validUser True
+
+    if not validUser: # If the user is not valid, give an error page
+        userError = "<h1>Your user information is wrong! Please try again.</h1>\n"
+        userError += """<table>
+            <tr>
+            <td><a href = "/assignment3/" class = "button">Return to the list</a></td>
+            </tr>
+            </table>"""
+        return htmlify("There was an error :(", userError, CSS())
+    return None
+
 
 def a3_index(): # This is our index page
     indexCont = '<form method = "post" action = "/rate_submit/">\n'
@@ -120,7 +154,7 @@ def a3_index(): # This is our index page
     # These are the headers of the table.
 
     i = 0
-    for music in musics:
+    for music in songs:
         indexCont += "<tr>\n"
         indexCont += "<td>" + music['name'] + "</td>\n"
         indexCont += "<td>" + str(music['year']) + "</td>\n"
@@ -180,43 +214,41 @@ def add_submit(): # This is the song adding page
     musicData = request.POST
     # The information from the add_page comes as a POST
 
-    global allowedUsers # As I want to use this list I say I'm using the global list
-
-    username = str(musicData['username'])
-    password = str(musicData['password'])
-    # This is the information I got from the add_page, I will use it to check if
-    # user is valid or not
-
-    validUser = False # Starts as false
-
-    for user in allowedUsers:
-        if (user['username'] == username and user['password'] == password):
-            validUser = True
-                             # If any of that 3 users are the input to
-                             # username and password boxes then we make validUser True
-
-    if not validUser: # If the user is not valid, give an error page
-        userError = "<h1>Your user information is wrong! Please try again.</h1>\n"
-        userError += """<table>
-                <tr>
-                <td><a href = "/add_page/" class = "button">Try Again</a></td>
-                <td><a href = "/assignment3/" class = "button">Return to the list</a></td>
-                </tr>
-                </table>"""
-        return htmlify("There was an error :(", userError, CSS())
+    checker = ValidateUser(str(musicData['username']), str(musicData['password']))
+    if checker is not None:
+        return checker
 
     # I checked the user information from the start so the other operations are
     # not made for nothing, if user is not valid these operations below will not be operated
 
     name = str(musicData['name'])
+
+    if name == "":
+        return generalError()
+
     year = int(musicData['year'])
+
+    if year < 0 or year > 2017:
+        return generalError()
+
     album = str(musicData['album'])
+
+    if album == "":
+        return generalError()
+
     band = str(musicData['band'])
+
+    if band == "":
+        return generalError()
+
     genre = str(musicData['genre'])
+
+    if genre == "":
+        return generalError()
     # These are the information from the add_page, I get these from the text boxes
 
-    global musics
-    musics = musics + [{'name': name, 'year': year, 'album': album, 'band': band, 'genre': genre, 'rating': -1, 'votes': 0}]
+    global songs
+    songs = songs + [{'name': name, 'year': year, 'album': album, 'band': band, 'genre': genre, 'rating': -1, 'votes': 0}]
     # I want to add a song to the musics list so I show I'm using the global to python
     # then as you see I am adding a song to the musics, this is the proper way to do it
     # I know the rect parantheses may seem odd but it is valid.
@@ -239,26 +271,18 @@ route ('/add_submit/', 'POST', add_submit)
 
 def rate_submit():
 
-    global musics
+    global songs
     global allowedUsers
 
     ratingData = request.POST
 
-    isValid = False
-    for user in allowedUsers:
-        if ratingData['username'] == user['username'] and ratingData['password'] == user['password']:
-            isValid = True
-
-    if not isValid:
-        userError = "<h1>Your user information is wrong! Please try again.</h1>\n"
-        userError += """<table>
-            <tr>
-            <td><a href = "/assignment3/" class = "button">Return to the list</a></td>
-            </tr>
-            </table>"""
-        return htmlify("There was an error :(", userError, CSS())
+    checker = ValidateUser(str(ratingData['username']), str(ratingData['password']))
+    if checker is not None:
+        return checker
 
     # Above operations are just as same as the add_submit page
+    if not 'rate' in ratingData:
+        return generalError()
 
     rawRating = str(ratingData['rate']).split("-")
     # 'rate' is the name I give to radioboxes in the main page. When one of them
@@ -268,19 +292,19 @@ def rate_submit():
     # I splitted the value of radio so the first part is song number
     rating = int(rawRating[1])
     # and the second part is the rating
-    votes = musics[songNum]['votes']
-    # votes is an attribute of musics which counts how many votes have been given to the song
-    musics[songNum]['rating'] = (musics[songNum]['rating'] * votes + rating) / (votes + 1)
+    votes = songs[songNum]['votes']
+    # votes is an attribute of songs which counts how many votes have been given to the song
+    songs[songNum]['rating'] = (songs[songNum]['rating'] * votes + rating) / (votes + 1)
     # This is pretty basic math, the average rating is 3 and I have 30 votes used so
     # if I want to add a new vote I multiply 3 * 30 then add my new rating then
     # then divide to 31 to get my new rating, and I assing my new rating
-    musics[songNum]['votes'] += 1 # A vote is used so I increment votes
+    songs[songNum]['votes'] += 1 # A vote is used so I increment votes
 
-    name = str(musics[songNum]['name'])
-    year = int(musics[songNum]['year'])
-    album = str(musics[songNum]['album'])
-    band = str(musics[songNum]['band'])
-    genre = str(musics[songNum]['genre'])
+    name = str(songs[songNum]['name'])
+    year = int(songs[songNum]['year'])
+    album = str(songs[songNum]['album'])
+    band = str(songs[songNum]['band'])
+    genre = str(songs[songNum]['genre'])
 
     # This is different from the add_submit, I know the songs list number so using that
     # I get my song attributes from the global list musics using the songNum
@@ -293,7 +317,8 @@ def rate_submit():
         <tr><th>Album:</th><td>""" + album + """</td></tr>
         <tr><th>Band:</th><td>""" + band + """</td></tr>
         <tr><th>Genre</th><td>""" + genre + """</td></tr>
-        <tr><td colspan = "2"><a href = "/assignment3/" class = "button">Return to the list</a></td></tr>
+        <tr><td><a href = "/rating_list/" class = "button">See the ratings</a></td>
+        <td><a href = "/assignment3/" class = "button">Return to the list</a></td></tr>
         </table>"""
     return htmlify("You rated a song", rateSubmitContent, CSS())
     # Just as in the add_submit page I show what song is rated after all the operations.
@@ -302,12 +327,12 @@ route ('/rate_submit/', 'POST', rate_submit)
 
 def rating_list(): # This is the page where all ratings are seen
 
-    global musics
+    global songs
 
     ratingListContent = '<table class = "music">\n'
     ratingListContent += "<tr><th>Name</th><th>Bar</th><th>Rating</th></tr>"
     # Created the table and the headers
-    for song in musics: # This for is printing songs in the list
+    for song in songs: # This for is printing songs in the list
         ratingListContent += "<tr>\n"
         ratingListContent += '<td>' + song['name'] + '</td>\n'
         ratingListContent += '<td class = "rater">'
