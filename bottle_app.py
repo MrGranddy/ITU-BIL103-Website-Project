@@ -60,7 +60,6 @@ def htmlify(title, content, style):
 def CSS(): # This is where all styles will be, for clean coding please prevent
            # using inline styling as much as you can
     css = """<style>
-
         table.music td,th{
         border: groove 2px black;
         padding: 15px;}
@@ -85,6 +84,16 @@ def CSS(): # This is where all styles will be, for clean coding please prevent
         padding: 15px;
         align = "center";}
 
+        table.comment{
+        margin-right:500px;
+        }
+    
+        table.comment td, th{
+        border: solid 2px black;
+        padding: 15px;
+        align = "center";
+        }
+
         a.button {
         border: solid 2px black;
         border-radius: 5px;
@@ -93,6 +102,18 @@ def CSS(): # This is where all styles will be, for clean coding please prevent
         background-color: #22AABB;
         color: #555511;
         padding: 0 5px 0 5px;}
+
+        input.button{
+        border: solid 2px black;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: bold;
+        background-color: #22AABB;
+        color: #555511;
+        padding: 0 5px 0 5px;
+        height:20px;
+        margin-bottom:5px;
+        }
 
         th.rate{
         color: red;
@@ -107,7 +128,6 @@ def CSS(): # This is where all styles will be, for clean coding please prevent
         float: left;
         }
         </style>"""
-
     return css
                # You know CSS element.{something} means affect the elements of that class
                # If there is something like {element}.{class} {element2} then this means
@@ -355,6 +375,75 @@ def rating_list(): # This is the page where all ratings are seen
     return htmlify("Ratings", ratingListContent, CSS())
     # Lastly buttons are printed and the rating list is done
 route ('/rating_list/', 'GET', rating_list)
+
+def comments():
+    # Defining a function to make users able to leave comments.
+    html="""Leave a comment us!<br>
+    <form method="post" action="/comment_sent/" id="comment"><br>
+    Name: <br><input type="text" name="nick"><br>
+    Comment:<br>
+    <textarea name="comment" form="comment"></textarea>
+    <br>
+    <input type="submit" value="Send your comment" class="button">
+    </form>
+    <a href="/comment_list/" class = "button">Click to see other comments!</a>
+    """
+    # <textarea> element creates a text area which provides us to take text inputs with no character boundaries.
+    # <form> and <textarea> elements are associated with id="comment" and form="comment" attributes and values.(line 382 and 385)
+    # Data is taken with post method. A link is given to see the other comments.
+    
+    return htmlify("Comments", html, CSS()) # Returning htmlified content.
+
+route ('/comments/', 'GET', comments) # Routing...
+
+posted_comments=[]
+posted_users=[]
+# Two variables posted_comments and posted_users are defined. posted_comments will hold comments and posted_users will hold
+# names of people who commented.
+
+def comment_sent():
+    # Defining a function to get data with post method.
+    global posted_comments
+    global posted_users
+    # Making variables global to access them in another function.
+    commentdata = request.POST
+    # Data is reached.
+    posted_comments.append(str(commentdata['comment']))
+    posted_users.append(str(commentdata['nick']))
+    # Data is saved.
+    html="""<h1>Your comment successfully sent!</h1>
+    <a href="/comment_list/" class = "button">Click to see other comments</a>
+    <a href="/assignment3/" class = "button">Click to go to the main page</a>
+    """
+    # Information and links to Home Page and Comment List.
+    return htmlify("Comment Sent!", html, CSS()) # Returning htmlified content.
+
+route ('/comment_sent/', 'POST', comment_sent) # Routing...
+
+def comment_list():
+    # Defining a function to list all comments and names.
+    html="""
+    <table class = comment>
+    <tr>
+    <th>Name/Nickname</th>
+    <th>Comment</th>
+    </tr>
+    """
+    # A table element is created.
+    for num in range(len(posted_comments)):
+        html+="""<tr>
+        <td>""" + posted_users[num] + """</td>
+        <td>""" + posted_comments[num] + """</td>
+        </tr>"""
+    # Adding comments and names as table data.
+    html+="""</table>
+    <a href="/assignment3/" class = "button">Click to go to the main page</a>
+    <a href="/comments/" class = "button">Click to add a comment</a>"""
+    # End of html content, with a closing tag and two links, one goes to Home Page and one goes to comment adding page.
+
+    return htmlify("Comment List", html, CSS()) # Returning htmlified content.
+
+route('/comment_list/', 'GET', comment_list) # Routing...
 
 def website_index():
     return htmlify('My lovely homepage',
