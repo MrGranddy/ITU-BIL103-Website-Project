@@ -42,6 +42,9 @@ allowedUsers = [
                   # This is changable in the program but cannot be reached
                   # from the website. Can be made into a fixed list in the future.
 
+posted_comments=[]
+# Variable posted_comments i defined. posted_comments will hold comments and users.
+
 def htmlify(title, content, style):
     page = """<!DOCTYPE html>
         <html>
@@ -60,7 +63,6 @@ def htmlify(title, content, style):
 def CSS(): # This is where all styles will be, for clean coding please prevent
            # using inline styling as much as you can
     css = """<style>
-
         table.music td,th{
         border: groove 2px black;
         padding: 15px;}
@@ -74,19 +76,43 @@ def CSS(): # This is where all styles will be, for clean coding please prevent
 
         table.add td{
         padding: 0 15px 0 0;
-        align = "center";}
+        }
 
         table.music{
         border-collapse: collapse;
+        width: 100%;
+        height: 100%;
         }
 
         table.music td, th{
         border: solid 2px black;
         padding: 15px;
-        align = "center";}
-
-        a.button {
+        text-align: center;
+        }
+    
+        table.comment td, th{
         border: solid 2px black;
+        padding: 15px;
+        text-align: center;
+        }
+        
+        table.but{
+        float: left;
+        padding: 0 30px 0 0;
+        }
+        
+        table.but td{
+        padding: 5px;
+        }
+        
+        table.inlog{
+        float: right;
+        }
+
+        .button {
+        border: solid 2px black;
+        font-size: 102%;
+        font-family: arial;
         border-radius: 5px;
         text-decoration: none;
         font-weight: bold;
@@ -101,13 +127,13 @@ def CSS(): # This is where all styles will be, for clean coding please prevent
         td.rater{
         font-size: 10px;
         font-weight: bold;
+        text-align: center;
         }
         
         .fleft{
         float: left;
         }
         </style>"""
-
     return css
                # You know CSS element.{something} means affect the elements of that class
                # If there is something like {element}.{class} {element2} then this means
@@ -174,11 +200,13 @@ def a3_index(): # This is our index page
     # the first song is selected and got a rating of 5
 
     indexCont += "</table>\n"
-    indexCont += """<table class = "button">
-        <tr>
-        <td><a href = "/add_page/" class = "button">Add a song!</a></td>
-        <td><a href = "/rating_list/" class = "button">See the ratings</a></td>
-        <td>Username: <input type = "text" name = "username" value = ""></td>
+    indexCont += """<table class = "but">
+        <tr><td><a href = "/add_page/" class = "button">Add a song!</a></td>
+        <td><a href = "/rating_list/" class = "button">See the ratings</a></td></tr>
+        <tr><td><a href = "/comments/" class = "button">Add a comment</a></td>
+        <td><a href = "/comment_list/" class = "button">See the comments</a></td></tr></table>
+        <table class="inlog">
+        <tr><td>Username: <input type = "text" name = "username" value = ""></td>
         <td>Password: <input type = "password" name = "password" value = ""></td>
         <td><input type="submit" value="Rate"></td>
         </tr>
@@ -195,12 +223,16 @@ def add_page():
         <tr><td>Year:</td><td><input type = "number" name = "year" value = ""></td></tr>
         <tr><td>Album:</td><td><input type = "text" name = "album" value = ""></td></tr>
         <tr><td>Band:</td><td><input type = "text" name = "band" value = ""></td></tr>
-        <tr><td>Genre:</td><td><input type = "text" name = "genre" value = ""></td></tr>
+        <tr><td>Genre:</td><td><input type = "text" name = "genre" value = ""></td></tr></table>
+        <table>
         <tr>
         <td>Username: <input type = "text" name = "username" value = ""></td>
         <td>Password: <input type = "password" name = "password" value = ""></td>
+        <td><input type = "submit" value = "Add" class="button"></td>
         </tr>
-        <tr><td><input type = "submit" value = "Add"></td><td><a href = "/assignment3/" class = "button">Return to the list</a></td></tr>
+        <tr>
+        <td colspan="3"><a href = "/assignment3/" class = "button">Return to the list</a></td>
+        </tr>
         </table>
         </form>
         """
@@ -355,6 +387,76 @@ def rating_list(): # This is the page where all ratings are seen
     return htmlify("Ratings", ratingListContent, CSS())
     # Lastly buttons are printed and the rating list is done
 route ('/rating_list/', 'GET', rating_list)
+
+def comments():
+    # Defining a function to make users able to leave comments.
+    html="""<h2>Leave a comment to us!</h2>
+    <form method="post" action="/comment_sent/" id="comment">
+    <table>
+    <tr><td colspan="2">Name:</td></tr>
+    <tr><td colspan="2"><input type="text" name="nick" size="67"></td></tr>
+    <tr><td colspan="2">Comment:</td></tr>
+    <tr><td colspan="2"><textarea name="comment" form="comment" rows="7" cols="65"></textarea></td></tr>
+    <tr>
+    <td><input type="submit" value="Send your comment" class="button"></td>
+    <td><a href="/comment_list/" class = "button">Click to see other comments!</a></td>
+    </tr>
+    </table>
+    </form>
+    """
+    # <textarea> element creates a text area which provides us to take text inputs with no character boundaries.
+    # <form> and <textarea> elements are associated with id="comment" and form="comment" attributes and values.(line 382 and 385)
+    # Data is taken with post method. A link is given to see the other comments.
+    
+    return htmlify("Comments", html, CSS()) # Returning htmlified content.
+
+route ('/comments/', 'GET', comments) # Routing...
+
+def comment_sent():
+    # Defining a function to get data with post method.
+    global posted_comments
+    # Making variables global to access them in another function.
+    commentdata = request.POST
+    # Data is reached.
+    posted_comments.append({'name': str(commentdata['nick']), 'comment': str(commentdata['comment'])})
+    # Data is saved.
+    html="""<h1>Your comment successfully sent!</h1>
+    <table><tr>
+    <td><a href="/comment_list/" class = "button">Click to see other comments</a></td>
+    <td><a href="/assignment3/" class = "button">Click to go to the main page</a></td></tr></table>
+    """
+    # Information and links to Home Page and Comment List.
+    return htmlify("Comment Sent!", html, CSS()) # Returning htmlified content.
+
+route ('/comment_sent/', 'POST', comment_sent) # Routing...
+
+def comment_list():
+
+    global posted_comments
+
+    # Defining a function to list all comments and names.
+    html="""
+    <table class = "music">
+    <tr>
+    <th>Name/Nickname</th>
+    <th>Comment</th>
+    </tr>
+    """
+    # A table element is created.
+    for comment in posted_comments:
+        html+="""<tr>
+        <td>""" + comment['name'] + """</td>
+        <td>""" + comment['comment'] + """</td>
+        </tr>"""
+    # Adding comments and names as table data.
+    html+="""<tr>
+    <td><a href="/assignment3/" class = "button">Click to go to the main page</a></td>
+    <td><a href="/comments/" class = "button">Click to add a comment</a></td></tr></table>"""
+    # End of html content, with a closing tag and two links, one goes to Home Page and one goes to comment adding page.
+
+    return htmlify("Comment List", html, CSS()) # Returning htmlified content.
+
+route('/comment_list/', 'GET', comment_list) # Routing...
 
 def website_index():
     return htmlify('My lovely homepage',
