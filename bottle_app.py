@@ -1,4 +1,3 @@
-
 #####################################################################
 ### Assignment skeleton
 ### You can alter the below code to make your own dynamic website.
@@ -29,14 +28,63 @@ songs = [{ 'name': 'Smells Like Teen Spirit',
             'band': "Guns N' Roses",
             'genre': 'Hard Rock',
             'rating': 5.0,
-            'votes': 1}
+            'votes': 1},
+
+          { 'name': 'Uptown Funk',
+            'year': 2005,
+            'album': 'Uptown Funk',
+            'band': "Mark Ranson",
+            'genre': 'Pop',
+            'rating': 5.0,
+            'votes': 1},
+            
+          { 'name': 'We Will Rock You',
+            'year': 1977,
+            'album': 'News of the World',
+            'band': "Queen",
+            'genre': 'Rock',
+            'rating': 5.0,
+            'votes': 1},
+          
+          { 'name': 'Smoke On The Water',
+            'year': 1972,
+            'album': 'Machine Head',
+            'band': "Deep Purple",
+            'genre': 'Metal',
+            'rating': 5.0,
+            'votes': 1},
+          
+          { 'name': 'Hit the Road Jack',
+            'year': 2004,
+            'album': 'Hit the Road Jack',
+            'band': "Ray Charles",
+            'genre': 'Blues',
+            'rating': 5.0,
+            'votes': 1},
+          
+          { 'name': ' he walked on water',
+            'year': 1989,
+            'album': "No Holdin' Back",
+            'band': "Randy Travis",
+            'genre': 'Country',
+            'rating': 5.0,
+            'votes': 1},
+          
+          { 'name': 'Forever in Love',
+            'year': 1992,
+            'album': 'Breathless',
+            'band': "Kenny G",
+            'genre': 'Jazz',
+            'rating': 5.0,
+            'votes': 1}         
+
           ] # This is the list for holding the musics
             # User can add to this list in runtime
 
 #allowed users
 allowedUsers = [
                 {'username': "VahitOglu", 'password': "polimer"},
-                {'username': "CansınBaba",'password': "csgo123"},
+                {'username': "tnycnsn",'password': "tnycnsn"},
                 {'username': "OmerZade",  'password': "htmlcss"}
                 ] # This is the list of users who can edit the website
                   # This is changable in the program but cannot be reached
@@ -66,24 +114,19 @@ def CSS(): # This is where all styles will be, for clean coding please prevent
         table.music td,th{
         border: groove 2px black;
         padding: 15px;}
-
         table.music tr{
         border-style: groove;}
-
         table.music{
         border-collapse: collapse;
         border-style: groove;}
-
         table.add td{
         padding: 0 15px 0 0;
         }
-
         table.music{
         border-collapse: collapse;
         width: 100%;
         height: 100%;
         }
-
         table.music td, th{
         border: solid 2px black;
         padding: 15px;
@@ -108,7 +151,6 @@ def CSS(): # This is where all styles will be, for clean coding please prevent
         table.inlog{
         float: right;
         }
-
         .button {
         border: solid 2px black;
         font-size: 102%;
@@ -119,11 +161,9 @@ def CSS(): # This is where all styles will be, for clean coding please prevent
         background-color: #22AABB;
         color: #555511;
         padding: 0 5px 0 5px;}
-
         th.rate{
         color: red;
         }
-
         td.rater{
         font-size: 10px;
         font-weight: bold;
@@ -200,16 +240,25 @@ def a3_index(): # This is our index page
     # the first song is selected and got a rating of 5
 
     indexCont += "</table>\n"
-    indexCont += """<table class = "but">
-        <tr><td><a href = "/add_page/" class = "button">Add a song!</a></td>
-        <td><a href = "/rating_list/" class = "button">See the ratings</a></td></tr>
-        <tr><td><a href = "/comments/" class = "button">Add a comment</a></td>
-        <td><a href = "/comment_list/" class = "button">See the comments</a></td></tr></table>
+    indexCont += """
+		<table class = "but">
+			<tr>
+				<td><a href = "/add_page/" class = "button">Add a song!</a></td>
+				<td><a href = "/rating_list/" class = "button">See the ratings</a></td></tr>
+			<tr>
+				<td><a href = "/comments/" class = "button">Add a comment</a></td>
+				<td><a href = "/comment_list/" class = "button">See the comments</a></td>
+			</tr>
+			<tr>
+				<td><a href = "/filter_category/" class = "button">Do You need Filter?</a></td>
+			</tr>
+        </table>
         <table class="inlog">
-        <tr><td>Username: <input type = "text" name = "username" value = ""></td>
-        <td>Password: <input type = "password" name = "password" value = ""></td>
-        <td><input type="submit" value="Rate"></td>
-        </tr>
+			<tr>
+				<td>Username: <input type = "text" name = "username" value = ""></td>
+				<td>Password: <input type = "password" name = "password" value = ""></td>
+				<td><input type="submit" value="Rate"></td>
+			</tr>
         </table>
         </form>\n"""
     # This is the ending of our index page, it contains our buttons and user info
@@ -373,7 +422,7 @@ def rating_list(): # This is the page where all ratings are seen
             if i < Rondo((song['rating'] / 5) * 100):
                 ratingListContent += "&#x25A0;" # Black Box - Unicde
             else:
-                ratingListContent += "&#x25A1;" # White Box - Unicode
+                ratingListContent += "&#x25A1;" # White Box - Unicode
         # This for loops creates the rating bars, it makes the rating into %
         # then prints black boxes until the % is reached then prints white boxes
         ratingListContent += '</td>\n'
@@ -458,6 +507,52 @@ def comment_list():
 
 route('/comment_list/', 'GET', comment_list) # Routing...
 
+
+def filter_category():
+    # Defining a function to make users able to leave comments.
+    html="""<h3>You can choose below categories for filter:</h3>
+    <form method="post" action="/filter_results/" id="comment">
+	<input type="checkbox" name="Pop" value="Pop">Pop</p>
+	<input type="checkbox" name="Rock" value="Rock">Rock</p>
+	<input type="checkbox" name="Hard Rock" value="Hard Rock">Hard Rock</p>
+	<input type="checkbox" name="Metal" value="Metal">Metal</p>
+	<input type="checkbox" name="Blues" value="Blues">Blues</p>
+	<input type="checkbox" name="Country" value="Country">Country</p>
+	<input type="checkbox" name="Jazz" value="Jazz">Jazz</p>
+	<input type="checkbox" name="Grunge" value="Grunge">Grunge</p>
+
+    <input type="submit" value="Filter Song Categories" class="button">
+    </form>
+    """
+
+    return htmlify("filter", html, CSS()) # Returning htmlified content.
+
+route ('/filter_category/', 'GET', filter_category) # Routing...
+
+def filter_results():
+	global songs
+	selectedGenre = request.POST
+	html = """<table class="music">\n
+	<th>Name</th><th>Year</th><th>Album</th><th>Band</th><th>Genre</th>\n'"""
+	for g in selectedGenre:
+		for s in songs:
+			a = s['genre']
+			if g == a:
+				html += "<tr>\n"
+				html += "<td>" + s['name'] + "</td>\n"
+				html += "<td>" + str(s['year']) + "</td>\n"
+				html += "<td>" + s['album'] + "</td>\n"
+				html += "<td>" + s['band'] + "</td>\n"
+				html += "<td>" + s['genre'] + "</td>\n"
+				html += "</tr>\n"
+	html += "</table>"
+	html += '<a href = "/assignment3/" class = "button">Click to go to the main page</a>'
+	
+	return htmlify("Results", html, CSS())
+     
+route('/filter_results/', 'POST', filter_results)	
+
+
 def website_index():
     return htmlify('My lovely homepage',
                    """
@@ -482,4 +577,3 @@ application = default_app()
 # The below code is necessary for running this bottle app standalone on your computer.
 if __name__ == "__main__":
     run()
-
