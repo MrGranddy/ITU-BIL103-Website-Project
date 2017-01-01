@@ -465,10 +465,10 @@ def comments(): #Valid HTML
     html="""<h2>Leave a comment to us!</h2>
     <form method="post" action="/comment_sent/" id="comment">
     <table>
-    <tr><td colspan="2">Name:</td></tr>
-    <tr><td colspan="2"><input type="text" name="nick" size="67"></td></tr>
-    <tr><td colspan="2">Comment:</td></tr>
-    <tr><td colspan="2"><textarea name="comment" form="comment" rows="7" cols="65"></textarea></td></tr>
+    <tr><td>Name:</td></tr>
+    <tr><td><input type="text" name="nick" size="67"></td></tr>
+    <tr><td>Comment:</td></tr>
+    <tr><td><textarea name="comment" form="comment" rows="7" cols="65"></textarea></td></tr>
     </table>
     <table class = "but">
     <tr>
