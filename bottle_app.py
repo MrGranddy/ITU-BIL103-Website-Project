@@ -62,7 +62,7 @@ songs = [{ 'name': 'Smells Like Teen Spirit',
             'rating': 5.0,
             'votes': 1},
           
-          { 'name': ' he walked on water',
+          { 'name': ' He Walked on Water',
             'year': 1989,
             'album': "No Holdin' Back",
             'band': "Randy Travis",
@@ -111,6 +111,15 @@ def htmlify(title, content, style):
 def CSS(): # This is where all styles will be, for clean coding please prevent
            # using inline styling as much as you can
     css = """<style>
+        body{
+        background-color: #0099CC;
+        }
+        input{
+        background-color: #AAEEFF;
+        }
+        textarea{
+        background-color: #AAEEFF;
+        }
         table.music td,th{
         border: groove 2px black;
         padding: 15px;}
@@ -128,6 +137,7 @@ def CSS(): # This is where all styles will be, for clean coding please prevent
         height: 100%;
         }
         table.music td, th{
+        background-color: #77EEEE;
         border: solid 2px black;
         padding: 15px;
         text-align: center;
@@ -153,13 +163,13 @@ def CSS(): # This is where all styles will be, for clean coding please prevent
         }
         .button {
         border: solid 2px black;
-        font-size: 102%;
+        font-size: 20px;
         font-family: arial;
         border-radius: 5px;
         text-decoration: none;
         font-weight: bold;
-        background-color: #22AABB;
-        color: #555511;
+        background-color: #2299AA;
+        color: #225522;
         padding: 0 5px 0 5px;}
         th.rate{
         color: red;
@@ -244,13 +254,10 @@ def a3_index(): # This is our index page
 		<table class = "but">
 			<tr>
 				<td><a href = "/add_page/" class = "button">Add a song!</a></td>
-				<td><a href = "/rating_list/" class = "button">See the ratings</a></td></tr>
-			<tr>
+				<td><a href = "/rating_list/" class = "button">See the ratings</a></td>
 				<td><a href = "/comments/" class = "button">Add a comment</a></td>
 				<td><a href = "/comment_list/" class = "button">See the comments</a></td>
-			</tr>
-			<tr>
-				<td><a href = "/filter_category/" class = "button">Do You need Filter?</a></td>
+				<td><a href = "/filter_category/" class = "button">Do You need a Filter?</a></td>
 			</tr>
         </table>
         <table class="inlog">
@@ -259,8 +266,24 @@ def a3_index(): # This is our index page
 				<td>Password: <input type = "password" name = "password" value = ""></td>
 				<td><input type="submit" value="Rate"></td>
 			</tr>
-        </table>
-        </form>\n"""
+        </table></form>"""
+
+    if len(songs) is not 0:
+        indexCont += """
+                <form method = "get" action = "/delete_item/">
+                <table>
+                <tr>
+                <td>Delete an item: </td>
+                    <td><select name="delete">"""
+        i = 0
+        for song in songs:
+            indexCont += '<option value="' + str(i) + '">' + song['name'] + '</option>\n'
+            i += 1
+        indexCont += "</select>\n</td>"
+        indexCont += '<td><input type = "submit" value = "Delete"></td>'
+        indexCont += "</table>"
+        indexCont += "</form>"
+
     # This is the ending of our index page, it contains our buttons and user info
 
     return htmlify("My lovely website", indexCont, CSS())
@@ -437,7 +460,7 @@ def rating_list(): # This is the page where all ratings are seen
     # Lastly buttons are printed and the rating list is done
 route ('/rating_list/', 'GET', rating_list)
 
-def comments():
+def comments(): #Valid HTML
     # Defining a function to make users able to leave comments.
     html="""<h2>Leave a comment to us!</h2>
     <form method="post" action="/comment_sent/" id="comment">
@@ -446,10 +469,12 @@ def comments():
     <tr><td colspan="2"><input type="text" name="nick" size="67"></td></tr>
     <tr><td colspan="2">Comment:</td></tr>
     <tr><td colspan="2"><textarea name="comment" form="comment" rows="7" cols="65"></textarea></td></tr>
+    </table>
+    <table class = "but">
     <tr>
     <td><input type="submit" value="Send your comment" class="button"></td>
     <td><a href="/comment_list/" class = "button">Click to see other comments!</a></td>
-    </tr>
+    <td><a href = "/assignment3/" class = "button">Click to return to the list</a></td></tr>
     </table>
     </form>
     """
@@ -461,7 +486,7 @@ def comments():
 
 route ('/comments/', 'GET', comments) # Routing...
 
-def comment_sent():
+def comment_sent(): #Valid HTML
     # Defining a function to get data with post method.
     global posted_comments
     # Making variables global to access them in another function.
@@ -496,9 +521,9 @@ def comment_list():
         html+="""<tr>
         <td>""" + comment['name'] + """</td>
         <td>""" + comment['comment'] + """</td>
-        </tr>"""
+        </tr></table>"""
     # Adding comments and names as table data.
-    html+="""<tr>
+    html+="""<table><tr>
     <td><a href="/assignment3/" class = "button">Click to go to the main page</a></td>
     <td><a href="/comments/" class = "button">Click to add a comment</a></td></tr></table>"""
     # End of html content, with a closing tag and two links, one goes to Home Page and one goes to comment adding page.
@@ -512,16 +537,17 @@ def filter_category():
     # Defining a function to make users able to leave comments.
     html="""<h3>You can choose below categories for filter:</h3>
     <form method="post" action="/filter_results/" id="comment">
-	<input type="checkbox" name="Pop" value="Pop">Pop</p>
-	<input type="checkbox" name="Rock" value="Rock">Rock</p>
-	<input type="checkbox" name="Hard Rock" value="Hard Rock">Hard Rock</p>
-	<input type="checkbox" name="Metal" value="Metal">Metal</p>
-	<input type="checkbox" name="Blues" value="Blues">Blues</p>
-	<input type="checkbox" name="Country" value="Country">Country</p>
-	<input type="checkbox" name="Jazz" value="Jazz">Jazz</p>
-	<input type="checkbox" name="Grunge" value="Grunge">Grunge</p>
-
-    <input type="submit" value="Filter Song Categories" class="button">
+    <table>
+	<tr><td><input type="checkbox" name="Pop" value="Pop"></td><td>Pop</td></tr>
+	<tr><td><input type="checkbox" name="Rock" value="Rock"></td><td>Rock</td></tr>
+	<tr><td><input type="checkbox" name="Hard Rock" value="Hard Rock"></td><td>Hard Rock</td></tr>
+	<tr><td><input type="checkbox" name="Metal" value="Metal"></td><td>Metal</td></tr>
+	<tr><td><input type="checkbox" name="Blues" value="Blues"></td><td>Blues</td></tr>
+	<tr><td><input type="checkbox" name="Country" value="Country"></td><td>Country</td></tr>
+	<tr><td><input type="checkbox" name="Jazz" value="Jazz"></td><td>Jazz</td></tr>
+	<tr><td><input type="checkbox" name="Grunge" value="Grunge"></td><td>Grunge</td></tr>
+    <tr><td colspan = "2"><input type="submit" value="Filter Song Categories" class="button"></td></tr>
+    </table>
     </form>
     """
 
@@ -533,7 +559,7 @@ def filter_results():
 	global songs
 	selectedGenre = request.POST
 	html = """<table class="music">\n
-	<th>Name</th><th>Year</th><th>Album</th><th>Band</th><th>Genre</th>\n'"""
+	<tr><th>Name</th><th>Year</th><th>Album</th><th>Band</th><th>Genre</th></tr>\n"""
 	for g in selectedGenre:
 		for s in songs:
 			a = s['genre']
@@ -550,7 +576,34 @@ def filter_results():
 	
 	return htmlify("Results", html, CSS())
      
-route('/filter_results/', 'POST', filter_results)	
+route('/filter_results/', 'POST', filter_results)
+
+def delete_item():
+    global songs
+
+    delete = request.GET['delete']
+
+    name = songs[int(delete)]['name']
+    year = songs[int(delete)]['year']
+    album = songs[int(delete)]['album']
+    band = songs[int(delete)]['band']
+    genre = songs[int(delete)]['genre']
+
+    del songs[int(delete)]
+
+    delete_content = """
+        <h2>You have deleted the song below</h2>
+        <table class = "music">
+        <tr><th>Name:</th><td>""" + name + """</td></tr>
+        <tr><th>Year:</th><td>""" + str(year) + """</td></tr>
+        <tr><th>Album:</th><td>""" + album + """</td></tr>
+        <tr><th>Band:</th><td>""" + band + """</td></tr>
+        <tr><th>Genre</th><td>""" + genre + """</td></tr>
+        <tr><td colspan = "2"><a href = "/assignment3/" class = "button">Return to the list</a></td></tr>
+        </table>"""
+    return htmlify("You've deleted a song!", delete_content, CSS())
+
+route('/delete_item/', 'GET', delete_item)
 
 
 def website_index():
