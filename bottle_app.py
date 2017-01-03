@@ -106,104 +106,61 @@ def htmlify(title, content, style):
     # function that I made for easy CSS editing.
 
 
-def CSS():  # This is where all styles will be, for clean coding please prevent
-    # using inline styling as much as you can
-    css = """<style>
-        body{
-            background-color: #0099CC;
-        }
+css = '<style>'
 
-        input{
-            background-color: #AAEEFF;
-        }
+css += 'body{background-color: #0099CC;}'
 
-        textarea{
-            background-color: #AAEEFF;
-        }
+css += 'input{background-color: #AAEEFF;}'
 
-        table.music td,th{
-            border: groove 2px black;
-            padding: 15px;}
-            table.music tr{
-            border-style: groove;
-        }
+css += 'textarea{background-color: #AAEEFF;}'
 
-        table.music{
-            border-collapse: collapse;
-            border-style: groove;}
-            table.add td{
-            padding: 0 15px 0 0;
-        }
+css += 'table.music td,th{ border: groove 2px black; padding: 15px;}'
 
-        table.music{
-            border-collapse: collapse;
-            width: 100%;
-            height: 100%;
-        }
+css += 'table.music tr{border-style: groove;}'
 
-        table.music td, th{
-            background-color: #77EEEE;
-            border: solid 2px black;
-            padding: 15px;
-            text-align: center;
-        }
+css += 'table.music{border-collapse: collapse;border-style: groove;}'
 
-        table.comment td, th{
-            border: solid 2px black;
-            padding: 15px;
-            text-align: center;
-        }
+css += 'table.add td{padding: 0 15px 0 0;}'
 
-        table.but{
-            float: left;
-            padding: 0 30px 0 0;
-        }
+css += 'table.music{border-collapse: collapse;width: 100%;height: 100%;}'
 
-        table.but td{
-            padding: 5px;
-        }
+css += 'table.music td, th{background-color: #77EEEE;border: solid 2px black;padding: 15px;text-align: center;}'
 
-        table.inlog{
-            float: right;
-        }
+css += 'table.comment td, th{border: solid 2px black;padding: 15px;text-align: center;}'
 
-        .button {
-            border: solid 2px black;
-            font-size: 20px;
-            font-family: arial;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            background-color: #2299AA;
-            color: #225522;
-            padding: 0 5px 0 5px;
-        }
+css += 'table.but{float: left;padding: 0 30px 0 0;}'
 
-        th.rate{
-            color: red;
-        }
+css += 'table.but td{padding: 5px;}'
 
-        td.rater{
-            font-size: 10px;
-            font-weight: bold;
-            text-align: center;
-        }
+css += 'table.inlog{float: right;}'
 
-        .fleft{
-            float: left;
-        }
-        </style>"""
-    return css
-    # You know CSS element.{something} means affect the elements of that class
-    # If there is something like {element}.{class} {element2} then this means
-    # affect the element2's under element.class
+css += """.button { border: solid 2px black;
+    font-size: 20px;
+    font-family: arial;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    background-color: #2299AA;
+    color: #225522;
+    padding: 0 5px 0 5px;}"""
+
+css += 'th.rate{color: red;}'
+
+css += 'td.rater{font-size: 10px;font-weight: bold;text-align: center;}'
+
+css += '.fleft{float: left;}'
+css += '</style>'
+
+# You know CSS element.{something} means affect the elements of that class
+# If there is something like {element}.{class} {element2} then this means
+# affect the element2's under element.class
 
 
 # Returns a general error page
 def general_error():
     content = '<h2 class = "error">There was an error with your submission, please try again.</h2>\n'
     content += '<a href = "/assignment3/" class = "button">Return to the list</a>\n'
-    return htmlify("Error!", content, CSS())
+    return htmlify("Error!", content, css)
 
 
 # Returns none if user is valid, returns error page otherwise
@@ -226,7 +183,7 @@ def validate_user(username, password):
         user_error += '<td><a href = "/assignment3/" class = "button">Return to the list</a></td>\n'
         user_error += '</tr>\n'
         user_error += '</table>\n'
-        return htmlify("There was an error :(", user_error, CSS())
+        return htmlify("There was an error :(", user_error, css)
     return None
 
 
@@ -306,7 +263,7 @@ def a3_index():  # This is our index page
 
     # This is the ending of our index page, it contains our buttons and user info
 
-    return htmlify("My lovely website", index_content, CSS())
+    return htmlify("My lovely website", index_content, css)
 
 
 def add_page():
@@ -328,7 +285,7 @@ def add_page():
     add_page_content += '</tr>\n'
     add_page_content += '</table>\n'
     add_page_content += '</form>\n'
-    return htmlify("Add a song!", add_page_content, CSS())
+    return htmlify("Add a song!", add_page_content, css)
 
 
 # add_page is pretty straight forward, it creates forms to get song information
@@ -398,7 +355,7 @@ def add_submit():  # This is the song adding page
         <tr><th>Genre</th><td>""" + genre + """</td></tr>
         <tr><td colspan = "2"><a href = "/assignment3/" class = "button">Return to the list</a></td></tr>
         </table>"""
-    return htmlify("Song successfully added!", add_submit_content, CSS())
+    return htmlify("Song successfully added!", add_submit_content, css)
     # After all those operations a webpage is shown to tell the user he/she
     # successfully added the song
 
@@ -456,7 +413,7 @@ def rate_submit():
         <tr><td><a href = "/rating_list/" class = "button">See the ratings</a></td>
         <td><a href = "/assignment3/" class = "button">Return to the list</a></td></tr>
         </table>"""
-    return htmlify("You rated a song", rateSubmitContent, CSS())
+    return htmlify("You rated a song", rateSubmitContent, css)
     # Just as in the add_submit page I show what song is rated after all the operations.
 
 
@@ -490,7 +447,7 @@ def rating_list():  # This is the page where all ratings are seen
     ratingListContent += '<td colspan = "3"><a href = "/assignment3/" class = "button">Return to the list</a></td>\n'
     ratingListContent += '</tr>\n'
     ratingListContent += "</table>"
-    return htmlify("Ratings", ratingListContent, CSS())
+    return htmlify("Ratings", ratingListContent, css)
     # Lastly buttons are printed and the rating list is done
 
 
@@ -510,8 +467,8 @@ def comments():  # Valid HTML
     <table class = "but">
     <tr>
     <td><input type="submit" value="Send your comment" class="button"></td>
-    <td><a href="/comment_list/" class = "button">Click to see other comments!</a></td>
-    <td><a href = "/assignment3/" class = "button">Click to return to the list</a></td></tr>
+    <td><a href="/comment_list/" class = "button">See other comments</a></td>
+    <td><a href = "/assignment3/" class = "button">Return to the list</a></td></tr>
     </table>
     </form>
     """
@@ -519,7 +476,7 @@ def comments():  # Valid HTML
     # <form> and <textarea> elements are associated with id="comment" and form="comment" attributes and values.(line 382 and 385)
     # Data is taken with post method. A link is given to see the other comments.
 
-    return htmlify("Comments", html, CSS())  # Returning htmlified content.
+    return htmlify("Comments", html, css)  # Returning htmlified content.
 
 
 route('/comments/', 'GET', comments)  # Routing...
@@ -537,12 +494,12 @@ def comment_sent():  # Valid HTML
     comment_sent_content = '<h1>Your comment successfully sent!</h1>\n'
     comment_sent_content += '<table>\n'
     comment_sent_content += '<tr>\n'
-    comment_sent_content += '<td><a href="/comment_list/" class = "button">Click to see other comments</a></td>\n'
-    comment_sent_content += '<td><a href="/assignment3/" class = "button">Click to go to the main page</a></td>\n'
+    comment_sent_content += '<td><a href="/comment_list/" class = "button">See other comments</a></td>\n'
+    comment_sent_content += '<td><a href="/assignment3/" class = "button">Return to the list</a></td>\n'
     comment_sent_content += '</tr>\n'
     comment_sent_content += '</table>\n'
     # Information and links to Home Page and Comment List.
-    return htmlify("Comment Sent!", comment_sent_content, CSS())  # Returning htmlified content.
+    return htmlify("Comment Sent!", comment_sent_content, css)  # Returning htmlified content.
 
 
 route('/comment_sent/', 'POST', comment_sent)  # Routing...
@@ -568,11 +525,11 @@ def comment_list():
     comment_content += '</table>\n'
     # Adding comments and names as table data.
     comment_content += """<table><tr>
-    <td><a href="/assignment3/" class = "button">Click to go to the main page</a></td>
-    <td><a href="/comments/" class = "button">Click to add a comment</a></td></tr></table>"""
+    <td><a href="/assignment3/" class = "button">Return to the list</a></td>
+    <td><a href="/comments/" class = "button">Add a comment</a></td></tr></table>"""
     # End of html content, with a closing tag and two links, one goes to Home Page and one goes to comment adding page.
 
-    return htmlify("Comment List", comment_content, CSS())  # Returning htmlified content.
+    return htmlify("Comment List", comment_content, css)  # Returning htmlified content.
 
 
 route('/comment_list/', 'GET', comment_list)  # Routing...
@@ -595,7 +552,7 @@ def filter_category():
     filter_content += '<td><a href = "/assignment3/ class = "button">Return to the list</a></td></tr>\n'
     filter_content += '</table>\n'
     filter_content += '</form>\n'
-    return htmlify("Filter", filter_content, CSS())  # Returning htmlified content.
+    return htmlify("Filter", filter_content, css)  # Returning htmlified content.
 
 
 route('/filter_category/', 'GET', filter_category)  # Routing...
@@ -625,8 +582,8 @@ def filter_results():
                 filter_content += "<td>" + song['genre'] + "</td>\n"
                 filter_content += "</tr>\n"
     filter_content += '</table>\n'
-    filter_content += '<a href = "/assignment3/" class = "button">Click to go to the main page</a>\n'
-    return htmlify("Results", filter_content, CSS())
+    filter_content += '<a href = "/assignment3/" class = "button">Return to the list</a>\n'
+    return htmlify("Results", filter_content, css)
 
 
 route('/filter_results/', 'POST', filter_results)
@@ -655,7 +612,7 @@ def delete_item():
         <tr><th>Genre</th><td>""" + genre + """</td></tr>
         <tr><td colspan = "2"><a href = "/assignment3/" class = "button">Return to the list</a></td></tr>
         </table>"""
-    return htmlify("You've deleted a song!", delete_content, CSS())
+    return htmlify("You've deleted a song!", delete_content, css)
 
 
 route('/delete_item/', 'GET', delete_item)
@@ -672,12 +629,6 @@ def website_index():
 
 route('/assignment3/', 'GET', a3_index)
 route('/', 'GET', website_index)
-
-#####################################################################
-### Don't alter the below code.
-### It allows this website to be hosted on PythonAnywhere
-### OR run on your computer.
-#####################################################################
 
 # This line makes bottle give nicer error messages
 debug(True)
