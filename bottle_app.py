@@ -1,10 +1,3 @@
-
-#####################################################################
-### Assignment skeleton
-### You can alter the below code to make your own dynamic website.
-### The landing page for assignment 3 should be at /assignment3/
-#####################################################################
-
 from bottle import route, run, default_app, debug, request
 
 def Rondo(num): # This is a rounding function I made, it round 6.6 ro 7 and 5.2 to 5
